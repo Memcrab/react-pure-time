@@ -1,7 +1,7 @@
 {
   "name": "react-pure-time",
-  "version": "1.0.1",
-  "description": "React modal",
+  "version": "0.0.1",
+  "description": "React pure time component which format date and time",
   "main": "dist/react-pure-time.min.js",
   "jnext:main": "dist/react-pure-time.min.js",
   "scripts": {
@@ -18,8 +18,10 @@
   },
   "keywords": [
     "react",
-    "modal",
-    "dialog"
+    "datetime",
+    "time",
+    "date",
+    "format"
   ],
   "author": "Max Mykhailenko",
   "license": "ISC",
