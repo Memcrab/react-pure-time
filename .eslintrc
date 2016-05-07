@@ -1,0 +1,11 @@
+{
+  "extends": "airbnb",
+  "parserOptions": {
+    "ecmaFeatures": {
+      experimentalObjectRestSpread: true
+    }
+  },
+  "rules" : {
+    "no-case-declarations": 0
+  }
+}
