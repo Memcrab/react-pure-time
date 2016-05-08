@@ -1,56 +1,35 @@
-// based on phpjs
+// based on phpjs date format library
 
-export default function date(timestamp, format) {
-  //   example 1: date('H:m:s \\m \\i\\s \\m\\o\\n\\t\\h', 1062402400);
-  //   returns 1: '09:09:40 m is month'
-  //   example 2: date('F j, Y, g:i a', 1062462400);
-  //   returns 2: 'September 2, 2003, 2:26 am'
-  //   example 3: date('Y W o', 1062462400);
-  //   returns 3: '2003 36 2003'
-  //   example 4: x = date('Y m d', (new Date()).getTime()/1000);
-  //   example 4: (x+'').length == 10 // 2009 01 09
-  //   returns 4: true
-  //   example 5: date('W', 1104534000);
-  //   returns 5: '53'
-  //   example 6: date('B t', 1104534000);
-  //   returns 6: '999 31'
-  //   example 7: date('W U', 1293750000.82); // 2010-12-31
-  //   returns 7: '52 1293750000'
-  //   example 8: date('W', 1293836400); // 2011-01-01
-  //   returns 8: '52'
-  //   example 9: date('W Y-m-d', 1293974054); // 2011-01-02
-  //   returns 9: '52 2011-01-02'
+export default function date(value, format, utc = false) {
+  const jsdate = new Date(value);
 
-  let that = this;
-  let jsdate;
-  let f;
-  // Keep this here (works, but for code commented-out below for file size reasons)
-  // let tal= [];
   const txtWords = [
     'Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur',
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
-  // trailing backslash -> (dropped)
-  // a backslash followed by any character (including backslash) -> the character
-  // empty string -> empty string
+
+  let f = {};
   const formatChr = /\\?(.?)/gi;
+
   const formatChrCb = (t, s) => {
-    return f[t] ? f[t]() : s;
+    if (f[t]) return f[t]();
+    return s;
   };
-  const _pad = (n, c) => {
-    n = String(n);
-    while (n.length < c) {
-      n = '0' + n;
+
+  const zeroPad = (n, c) => {
+    let newN = String(n);
+    while (newN.length < c) {
+      newN = `0${newN}`;
     }
-    return n;
+    return newN;
   };
 
   f = {
     // Day
     d() {
       // Day of month w/leading 0; 01..31
-      return _pad(f.j(), 2);
+      return zeroPad(f.j(), 2);
     },
     D() {
       // Shorthand day name; Mon...Sun
@@ -59,7 +38,8 @@ export default function date(timestamp, format) {
     },
     j() {
       // Day of month; 1..31
-      return jsdate.getUTCDate();
+      if (utc) return jsdate.getUTCDate();
+      return jsdate.getDate();
     },
     l() {
       // Full day name; Monday...Sunday
@@ -73,14 +53,15 @@ export default function date(timestamp, format) {
       // Ordinal suffix for day of month; st, nd, rd, th
       const j = f.j();
       let i = j % 10;
-      if (i <= 3 && parseInt((j % 100) / 10, 10) == 1) {
+      if (i <= 3 && parseInt((j % 100) / 10, 10) === 1) {
         i = 0;
       }
       return ['st', 'nd', 'rd'][i - 1] || 'th';
     },
     w() {
       // Day of week; 0[Sun]..6[Sat]
-      return jsdate.getUTCDay();
+      if (utc) return jsdate.getUTCDay();
+      return jsdate.getDay();
     },
     z() {
       // Day of year; 0..365
@@ -93,8 +74,13 @@ export default function date(timestamp, format) {
     W() {
       // ISO-8601 week number
       const a = new Date(f.Y(), f.n() - 1, f.j() - f.N() + 3);
-      const b = new Date(a.getUTCFullYear(), 0, 4);
-      return _pad(1 + Math.round((a - b) / 864e5 / 7), 2);
+      let b;
+      if (utc) {
+        b = new Date(a.getUTCFullYear(), 0, 4);
+      } else {
+        b = new Date(a.getFullYear(), 0, 4);
+      }
+      return zeroPad(1 + Math.round((a - b) / 864e5 / 7), 2);
     },
 
     // Month
@@ -104,7 +90,7 @@ export default function date(timestamp, format) {
     },
     m() {
       // Month w/leading 0; 01...12
-      return _pad(f.n(), 2);
+      return zeroPad(f.n(), 2);
     },
     M() {
       // Shorthand month name; Jan...Dec
@@ -113,12 +99,13 @@ export default function date(timestamp, format) {
     },
     n() {
       // Month; 1...12
+      if (utc) return jsdate.getMonth() + 1;
       return jsdate.getUTCMonth() + 1;
     },
     t() {
       // Days in month; 28...31
-      return (new Date(f.Y(), f.n(), 0))
-        .getUTCDate();
+      if (utc) return (new Date(f.Y(), f.n(), 0)).getUTCDate();
+      return (new Date(f.Y(), f.n(), 0)).getDate();
     },
 
     // Year
@@ -136,18 +123,18 @@ export default function date(timestamp, format) {
     },
     Y() {
       // Full year; e.g. 1980...2010
-      return jsdate.getUTCFullYear();
+      if (utc) return jsdate.getUTCFullYear();
+      return jsdate.getFullYear();
     },
     y() {
       // Last two digits of year; 00...99
-      return f.Y()
-        .toString()
-        .slice(-2);
+      return f.Y().toString().slice(-2);
     },
 
     // Time
     a() {
       // am or pm
+      if (utc) return jsdate.getHours() > 11 ? 'pm' : 'am';
       return jsdate.getUTCHours() > 11 ? 'pm' : 'am';
     },
     A() {
@@ -163,7 +150,7 @@ export default function date(timestamp, format) {
       // Minutes
       // Seconds
       const s = jsdate.getUTCSeconds();
-      return _pad(Math.floor((H + i + s + 36e2) / 86.4) % 1e3, 3);
+      return zeroPad(Math.floor((H + i + s + 36e2) / 86.4) % 1e3, 3);
     },
     g() {
       // 12-Hours; 1..12
@@ -171,27 +158,31 @@ export default function date(timestamp, format) {
     },
     G() {
       // 24-Hours; 0..23
-      return jsdate.getUTCHours();
+      if (utc) return jsdate.getUTCHours();
+      return jsdate.getHours();
     },
     h() {
       // 12-Hours w/leading 0; 01..12
-      return _pad(f.g(), 2);
+      return zeroPad(f.g(), 2);
     },
     H() {
       // 24-Hours w/leading 0; 00..23
-      return _pad(f.G(), 2);
+      return zeroPad(f.G(), 2);
     },
     i() {
       // Minutes w/leading 0; 00..59
-      return _pad(jsdate.getUTCMinutes(), 2);
+      if (utc) return zeroPad(jsdate.getUTCMinutes(), 2);
+      return zeroPad(jsdate.getMinutes(), 2);
     },
     s() {
       // Seconds w/leading 0; 00..59
-      return _pad(jsdate.getUTCSeconds(), 2);
+      if (utc) return zeroPad(jsdate.getUTCSeconds(), 2);
+      return zeroPad(jsdate.getSeconds(), 2);
     },
     u() {
       // Microseconds; 000000-999000
-      return _pad(jsdate.getUTCMilliseconds() * 1000, 6);
+      if (utc) return zeroPad(jsdate.getUTCMilliseconds() * 1000, 6);
+      return zeroPad(jsdate.getMilliseconds() * 1000, 6);
     },
 
     // Timezone
@@ -215,21 +206,22 @@ export default function date(timestamp, format) {
       // Jul 1
       // Jul 1 UTC
       const d = Date.UTC(f.Y(), 6);
-      return ((a - c) !== (b - d)) ? 1 : 0;
+      return (a - c) !== (b - d) ? 1 : 0;
     },
     O() {
       // Difference to GMT in hour format; e.g. +0200
       const tzo = jsdate.getTimezoneOffset();
       const a = Math.abs(tzo);
-      return (tzo > 0 ? '-' : '+') + _pad(Math.floor(a / 60) * 100 + a % 60, 4);
+      return (tzo > 0 ? '-' : '+') + zeroPad(Math.floor(a / 60) * 100 + a % 60, 4);
     },
     P() {
       // Difference to GMT w/colon; e.g. +02:00
       const O = f.O();
-      return (`${O.substr(0, 3)}:${O.substr(3, 2)}`);
+      return `${O.substr(0, 3)}:${O.substr(3, 2)}`;
     },
     T() {
-      return 'UTC';
+      if (utc) return 'UTC';
+      return 'LOCAL';
     },
     Z() {
       // Timezone offset in seconds (-43200...50400)
@@ -251,14 +243,5 @@ export default function date(timestamp, format) {
     },
   };
 
-  function run(timestamp, format) {
-    that = this;
-    jsdate = (timestamp === undefined ? new Date() : // Not provided
-      (timestamp instanceof Date) ? timestamp : // JS Date()
-      new Date(timestamp * 1000) // UNIX timestamp (auto-convert to int)
-    );
-    return format.replace(formatChr, formatChrCb);
-  }
-
-  return run(timestamp, format);
+  return format.replace(formatChr, formatChrCb);
 }

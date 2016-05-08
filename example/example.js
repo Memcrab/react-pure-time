@@ -12,33 +12,57 @@ class ModalContainer extends React.Component {
               <th>Value</th>
               <th>Format</th>
               <th>Time component</th>
-              <th>UTC Time component</th>
+              <th>with <code>utc</code> flag</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Empty</td>
-              <td></td>
+              <td>Empty value</td>
+              <td>—</td>
               <td><Time /></td>
-              <td></td>
+              <td><Time utc /></td>
+            </tr>
+            <tr>
+              <td>Empty value with placeholder</td>
+              <td>—</td>
+              <td><Time placeholder="no time defined" /></td>
+              <td><Time placeholder="no time defined" utc /></td>
             </tr>
             <tr>
               <td>1261322332312</td>
               <td>H:i:s</td>
-              <td></td>
               <td><Time value={1261322332312} format="H:i:s" /></td>
+              <td><Time value={1261322332312} format="H:i:s" utc /></td>
             </tr>
             <tr>
               <td>new Date(1261322332312)</td>
               <td>d.m.Y H:i:s</td>
-              <td></td>
               <td><Time value={new Date(1261322332312)} format="d.m.Y H:i:s" /></td>
+              <td><Time value={new Date(1261322332312)} format="d.m.Y H:i:s" utc /></td>
             </tr>
             <tr>
               <td>new Date()</td>
               <td>d.m.Y H:i:s</td>
-              <td></td>
               <td><Time value={new Date()} format="d.m.Y H:i:s" /></td>
+              <td><Time value={new Date()} format="d.m.Y H:i:s" utc /></td>
+            </tr>
+            <tr>
+              <td>1990-06-16 13:22:17</td>
+              <td>d.m.Y H:i:s</td>
+              <td><Time value="1990-06-16 13:22:17" format="d.m.Y H:i:s" /></td>
+              <td><Time value="1990-06-16 13:22:17" format="d.m.Y H:i:s" utc /></td>
+            </tr>
+            <tr>
+              <td>September 2, 2003, 2:26 am</td>
+              <td>d.m.Y H:i:s</td>
+              <td><Time value="September 2, 2003, 2:26 am" format="d.m.Y H:i:s" /></td>
+              <td><Time value="September 2, 2003, 2:26 am" format="d.m.Y H:i:s" utc /></td>
+            </tr>
+            <tr>
+              <td>2003 36 2003</td>
+              <td>d.m.Y H:i:s</td>
+              <td><Time value="2003 36 2003" format="d.m.Y H:i:s" /></td>
+              <td><Time value="2003 36 2003" format="d.m.Y H:i:s" utc /></td>
             </tr>
           </tbody>
         </table>

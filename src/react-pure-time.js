@@ -1,34 +1,37 @@
 import React, { Component, PropTypes } from 'react';
 import dateformat from './format.js';
 
-const localTimezoneOffset = (new Date()).getTimezoneOffset() * 60 * 1000;
-
 class Time extends Component {
-  normalizeValue(value) {
-    const milliseconds = new RegExp(/^[0-9]{0,13}$/);
-    switch (true) {
-      case milliseconds.test(value): // check if milliseconds
-        return new Date(value - localTimezoneOffset);
-      default:
-        return value;
-    }
-    // check if mysql
-    // check if simple string
+  isDate(value) {
+    const testDate = new Date(value);
+    if (Object.prototype.toString.call(testDate) !== '[object Date]') return false;
+    return !isNaN(testDate.getTime());
   }
 
   render() {
-    const { value, format, ifEmpty, className } = this.props;
+    const {
+      value,
+      format,
+      placeholder,
+      className,
+      utc,
+    } = this.props;
     return (
       <span className={className}>
-        {value ? dateformat(this.normalizeValue(value), format) : ifEmpty}
+        {
+          this.isDate(value) ?
+          dateformat(new Date(value), format, utc) :
+          placeholder
+        }
       </span>
     );
   }
 }
 
 Time.defaultProps = {
-  ifEmpty: '—',
+  placeholder: '—',
   format: 'd.m.Y H:i',
+  utc: false,
 };
 
 
@@ -39,8 +42,10 @@ Time.propTypes = {
     PropTypes.number,
     PropTypes.instanceOf(Date),
   ]),
-  ifEmpty: PropTypes.string,
+  placeholder: PropTypes.string,
+  utc: PropTypes.bool,
   format: PropTypes.string,
 };
 
+export const format = dateformat;
 export default Time;
