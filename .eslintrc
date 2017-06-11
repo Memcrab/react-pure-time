@@ -1,11 +1,19 @@
 {
-  "extends": "airbnb",
+  "extends": [
+  "airbnb",
+  "plugin:flowtype/recommended"
+  ],
+  "plugins": [
+    "flowtype"
+  ],
   "parserOptions": {
     "ecmaFeatures": {
       experimentalObjectRestSpread: true
     }
   },
   "rules" : {
-    "no-case-declarations": 0
+    "no-case-declarations": 0,
+    "new-cap": 0,
+    "no-nested-ternary": 0,
   }
 }
