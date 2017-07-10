@@ -1,24 +1,25 @@
+// @flow
 // based on phpjs date format library
+type valueType = Date | number | string;
+export default function date(value: valueType, format: string, utc: boolean = false): string {
+  const jsdate: Date = new Date(value);
 
-export default function date(value, format, utc = false) {
-  const jsdate = new Date(value);
-
-  const txtWords = [
+  const txtWords: string[] = [
     'Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur',
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
 
   let f = {};
-  const formatChr = /\\?(.?)/gi;
+  const formatChr: RegExp = /\\?(.?)/gi;
 
-  const formatChrCb = (t, s) => {
+  const formatChrCb = (t: string, s: string): string => {
     if (f[t]) return f[t]();
     return s;
   };
 
-  const zeroPad = (n, c) => {
-    let newN = String(n);
+  const zeroPad = (n: number, c: number): string => {
+    let newN: string = String(n);
     while (newN.length < c) {
       newN = `0${newN}`;
     }
@@ -27,54 +28,54 @@ export default function date(value, format, utc = false) {
 
   f = {
     // Day
-    d() {
+    d(): string {
       // Day of month w/leading 0; 01..31
       return zeroPad(f.j(), 2);
     },
-    D() {
+    D(): string {
       // Shorthand day name; Mon...Sun
       return f.l()
         .slice(0, 3);
     },
-    j() {
+    j(): number {
       // Day of month; 1..31
       if (utc) return jsdate.getUTCDate();
       return jsdate.getDate();
     },
-    l() {
+    l(): string {
       // Full day name; Monday...Sunday
       return `${txtWords[f.w()]}day`;
     },
-    N() {
+    N(): number {
       // ISO-8601 day of week; 1[Mon]..7[Sun]
       return f.w() || 7;
     },
-    S() {
+    S(): string {
       // Ordinal suffix for day of month; st, nd, rd, th
-      const j = f.j();
-      let i = j % 10;
+      const j: number = f.j();
+      let i: number = j % 10;
       if (i <= 3 && parseInt((j % 100) / 10, 10) === 1) {
         i = 0;
       }
       return ['st', 'nd', 'rd'][i - 1] || 'th';
     },
-    w() {
+    w(): number {
       // Day of week; 0[Sun]..6[Sat]
       if (utc) return jsdate.getUTCDay();
       return jsdate.getDay();
     },
-    z() {
+    z(): number {
       // Day of year; 0..365
-      const a = new Date(f.Y(), f.n() - 1, f.j());
-      const b = new Date(f.Y(), 0, 1);
+      const a: Date = new Date(f.Y(), f.n() - 1, f.j());
+      const b: Date = new Date(f.Y(), 0, 1);
       return Math.round((a - b) / 864e5);
     },
 
     // Week
-    W() {
+    W(): string {
       // ISO-8601 week number
-      const a = new Date(f.Y(), f.n() - 1, f.j() - f.N() + 3);
-      let b;
+      const a: Date = new Date(f.Y(), f.n() - 1, f.j() - f.N() + 3);
+      let b: Date;
       if (utc) {
         b = new Date(a.getUTCFullYear(), 0, 4);
       } else {
@@ -84,160 +85,161 @@ export default function date(value, format, utc = false) {
     },
 
     // Month
-    F() {
+    F(): string {
       // Full month name; January...December
       return txtWords[6 + f.n()];
     },
-    m() {
+    m(): string {
       // Month w/leading 0; 01...12
       return zeroPad(f.n(), 2);
     },
-    M() {
+    M(): string {
       // Shorthand month name; Jan...Dec
       return f.F()
         .slice(0, 3);
     },
-    n() {
+    n(): number {
       // Month; 1...12
       if (utc) return jsdate.getMonth() + 1;
       return jsdate.getUTCMonth() + 1;
     },
-    t() {
+    t(): number {
       // Days in month; 28...31
       if (utc) return (new Date(f.Y(), f.n(), 0)).getUTCDate();
       return (new Date(f.Y(), f.n(), 0)).getDate();
     },
 
     // Year
-    L() {
+    L(): number {
       // Is leap year?; 0 or 1
-      const j = f.Y();
-      return j % 4 === 0 & j % 100 !== 0 | j % 400 === 0;
+      const j: number = f.Y();
+      return (j % 4 === 0 && j % 100 !== 0 || j % 400 === 0) ? 1 : 0;
     },
-    o() {
+    o(): number {
       // ISO-8601 year
-      const n = f.n();
-      const W = f.W();
-      const Y = f.Y();
+      const n: number = f.n();
+      const W: number = parseInt(f.W(), 10);
+      const Y: number = f.Y();
       return Y + (n === 12 && W < 9 ? 1 : n === 1 && W > 9 ? -1 : 0);
     },
-    Y() {
+    Y(): number {
       // Full year; e.g. 1980...2010
       if (utc) return jsdate.getUTCFullYear();
       return jsdate.getFullYear();
     },
-    y() {
+    y(): string {
       // Last two digits of year; 00...99
       return f.Y().toString().slice(-2);
     },
 
     // Time
-    a() {
+    a(): string {
       // am or pm
       if (utc) return jsdate.getHours() > 11 ? 'pm' : 'am';
       return jsdate.getUTCHours() > 11 ? 'pm' : 'am';
     },
-    A() {
+    A(): string {
       // AM or PM
       return f.a()
         .toUpperCase();
     },
-    B() {
+    B(): string {
       // Swatch Internet time; 000..999
-      const H = jsdate.getUTCHours() * 36e2;
+      const H: number = jsdate.getUTCHours() * 36e2;
       // Hours
-      const i = jsdate.getUTCMinutes() * 60;
+      const i: number = jsdate.getUTCMinutes() * 60;
       // Minutes
       // Seconds
-      const s = jsdate.getUTCSeconds();
+      const s: number = jsdate.getUTCSeconds();
       return zeroPad(Math.floor((H + i + s + 36e2) / 86.4) % 1e3, 3);
     },
-    g() {
+    g(): number {
       // 12-Hours; 1..12
       return f.G() % 12 || 12;
     },
-    G() {
+    G(): number {
       // 24-Hours; 0..23
       if (utc) return jsdate.getUTCHours();
       return jsdate.getHours();
     },
-    h() {
+    h(): string {
       // 12-Hours w/leading 0; 01..12
       return zeroPad(f.g(), 2);
     },
-    H() {
+    H(): string {
       // 24-Hours w/leading 0; 00..23
       return zeroPad(f.G(), 2);
     },
-    i() {
+    i(): string {
       // Minutes w/leading 0; 00..59
       if (utc) return zeroPad(jsdate.getUTCMinutes(), 2);
       return zeroPad(jsdate.getMinutes(), 2);
     },
-    s() {
+    s(): string {
       // Seconds w/leading 0; 00..59
       if (utc) return zeroPad(jsdate.getUTCSeconds(), 2);
       return zeroPad(jsdate.getSeconds(), 2);
     },
-    u() {
+    u(): string {
       // Microseconds; 000000-999000
       if (utc) return zeroPad(jsdate.getUTCMilliseconds() * 1000, 6);
       return zeroPad(jsdate.getMilliseconds() * 1000, 6);
     },
 
     // Timezone
-    e() {
+    e(): Error {
       // Timezone identifier; e.g. Atlantic/Azores, ...
       // The following works, but requires inclusion of the very large
       // timezone_abbreviations_list() function.
       /*              return that.date_default_timezone_get();
        */
-      throw 'Not supported (see source code of date() for timezone on how to add support)';
+      throw new Error(`Not supported
+        (see source code of date() for timezone on how to add support)`);
     },
-    I() {
+    I(): number {
       // DST observed?; 0 or 1
       // Compares Jan 1 minus Jan 1 UTC to Jul 1 minus Jul 1 UTC.
       // If they are not equal, then DST is observed.
-      const a = new Date(f.Y(), 0);
+      const a: Date = new Date(f.Y(), 0);
       // Jan 1
-      const c = Date.UTC(f.Y(), 0);
+      const c: number = Date.UTC(f.Y(), 0);
       // Jan 1 UTC
-      const b = new Date(f.Y(), 6);
+      const b: Date = new Date(f.Y(), 6);
       // Jul 1
       // Jul 1 UTC
-      const d = Date.UTC(f.Y(), 6);
+      const d: number = Date.UTC(f.Y(), 6);
       return (a - c) !== (b - d) ? 1 : 0;
     },
-    O() {
+    O(): string {
       // Difference to GMT in hour format; e.g. +0200
-      const tzo = jsdate.getTimezoneOffset();
-      const a = Math.abs(tzo);
+      const tzo: number = jsdate.getTimezoneOffset();
+      const a: number = Math.abs(tzo);
       return (tzo > 0 ? '-' : '+') + zeroPad(Math.floor(a / 60) * 100 + a % 60, 4);
     },
-    P() {
+    P(): string {
       // Difference to GMT w/colon; e.g. +02:00
-      const O = f.O();
+      const O: string = f.O();
       return `${O.substr(0, 3)}:${O.substr(3, 2)}`;
     },
-    T() {
+    T(): string {
       if (utc) return 'UTC';
       return 'LOCAL';
     },
-    Z() {
+    Z(): number {
       // Timezone offset in seconds (-43200...50400)
       return -jsdate.getTimezoneOffset() * 60;
     },
 
     // Full Date/Time
-    c() {
+    c(): string {
       // ISO-8601 date.
       return 'Y-m-d\\TH:i:sP'.replace(formatChr, formatChrCb);
     },
-    r() {
+    r(): string {
       // RFC 2822
       return 'D, d M Y H:i:s O'.replace(formatChr, formatChrCb);
     },
-    U() {
+    U(): number {
       // Seconds since UNIX epoch
       return jsdate / 1000 | 0;
     },

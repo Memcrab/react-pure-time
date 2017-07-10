@@ -1,8 +1,23 @@
-import React, { Component, PropTypes } from 'react';
+// @flow
+import React, { Component } from 'react';
 import dateformat from './format.js';
 
 class Time extends Component {
-  isDate(value) {
+  static defaultProps = {
+    placeholder: '—',
+    format: 'd.m.Y H:i',
+    utc: false,
+  }
+
+  props: {
+    className: string,
+    value: string | number | Date,
+    placeholder: string,
+    utc: boolean,
+    format: string,
+  }
+
+  isDate(value: string | number | Date): boolean {
     const testDate = new Date(value);
     if (Object.prototype.toString.call(testDate) !== '[object Date]') return false;
     return !isNaN(testDate.getTime());
@@ -27,25 +42,6 @@ class Time extends Component {
     );
   }
 }
-
-Time.defaultProps = {
-  placeholder: '—',
-  format: 'd.m.Y H:i',
-  utc: false,
-};
-
-
-Time.propTypes = {
-  className: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.instanceOf(Date),
-  ]),
-  placeholder: PropTypes.string,
-  utc: PropTypes.bool,
-  format: PropTypes.string,
-};
 
 export const format = dateformat;
 export default Time;
