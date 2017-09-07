@@ -135,8 +135,8 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     // Time
     a(): string {
       // am or pm
-      if (utc) return jsdate.getHours() > 11 ? 'pm' : 'am';
-      return jsdate.getUTCHours() > 11 ? 'pm' : 'am';
+      if (utc) return jsdate.getUTCHours() > 11 ? 'pm' : 'am';
+      return jsdate.getHours() > 11 ? 'pm' : 'am';
     },
     A(): string {
       // AM or PM
