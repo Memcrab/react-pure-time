@@ -100,8 +100,8 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     },
     n(): number {
       // Month; 1...12
-      if (utc) return jsdate.getMonth() + 1;
-      return jsdate.getUTCMonth() + 1;
+      if (utc) return jsdate.getUTCMonth() + 1;
+      return jsdate.getMonth() + 1;
     },
     t(): number {
       // Days in month; 28...31
