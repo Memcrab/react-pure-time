@@ -66,6 +66,11 @@ class ModalContainer extends React.Component {
             </tr>
           </tbody>
         </table>
+        <div>
+          RELATIVE FORMAT!
+          <br />
+          <Time value={new Date('Tue Oct 31 2017 17:37:43 GMT+0200 (EET)')} relativeTime utc format="d.m.Y H:i:s" />
+        </div>
       </div>
     );
   }
