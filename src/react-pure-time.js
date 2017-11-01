@@ -113,10 +113,12 @@ class Time extends Component {
 
   checkForRelativeTimeProps(props) {
     if (props.relativeTime && this.isDate(props.value)) {
+      this.updateRelativeTime(new Date(props.value), props.unit);
+
       if (this.interval) window.clearInterval(this.interval);
       this.interval = setInterval(
         () => this.updateRelativeTime(new Date(props.value), props.unit)
-      , 100);
+      , 1000);
     }
   }
 
