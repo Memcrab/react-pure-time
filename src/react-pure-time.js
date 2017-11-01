@@ -87,7 +87,7 @@ class Time extends Component {
     const prevUnit = this.currentUnit;
     this.currentUnit = unit || this.bestFit(diff);
     if (this.currentUnit !== prevUnit) {
-      this.checkForRelativeTimeProps(this.props);
+      return this.checkForRelativeTimeProps(this.props);
     }
 
     let time = diff[`${this.currentUnit}s`];
