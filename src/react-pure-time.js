@@ -14,13 +14,12 @@ class Time extends Component {
     this.updateRelativeTime = this.updateRelativeTime.bind(this);
     this.getRelativeTimeDiff = this.getRelativeTimeDiff.bind(this);
     this.getRelativeTimeString = this.getRelativeTimeString.bind(this);
+    this.runSelfAdjustingTimer = this.runSelfAdjustingTimer.bind(this);
     this.state = {
-      relativeTime: {
-        value: null,
-        string: '',
-      },
+      relativeTime: '',
     };
     this.timer = null;
+    this.expectedTimerDiff = Date.now() + 1000;
   }
 
   componentWillMount() {
@@ -39,12 +38,12 @@ class Time extends Component {
     return `${time} ${time % 100 === 1 || time % 10 === 1 ? `${unit}` : `${unit}s`} ago`;
   }
 
-  getRelativeTimeDiff(value, utc = false) {
+  getRelativeTimeDiff(value) {
     const date = value;
     const now = new Date();
 
-    const dateMs = utc ? this.convertToUTC(date) : date.getTime();
-    const nowMs = utc ? this.convertToUTC(now) : now.getTime();
+    const dateMs = date.getTime();
+    const nowMs = now.getTime();
 
     const ms = nowMs - dateMs;
     if (ms < 0) {
@@ -52,97 +51,72 @@ class Time extends Component {
       return false;
     }
 
-    const getMonth = utc ? 'getUTCMonth' : 'getMonth';
-    const getYear = utc ? 'getUTCFullYear' : 'getFullYear';
-
-    const years = now[getYear]() - date[getYear]();
-    const round = Math[ms > 0 ? 'floor' : 'ceil'];
+    const years = now.getFullYear() - date.getFullYear();
 
     return {
       ms,
-      seconds: round(ms / msAmountIn.second),
-      minutes: round(ms / msAmountIn.minute),
-      hours: round(ms / msAmountIn.hour),
-      days: round(ms / msAmountIn.day),
-      months: years * 12 + now[getMonth]() - date[getMonth](),
+      seconds: Math.floor(ms / msAmountIn.second),
+      minutes: Math.floor(ms / msAmountIn.minute),
+      hours: Math.floor(ms / msAmountIn.hour),
+      days: Math.floor(ms / msAmountIn.day),
+      months: years * 12 + now.getMonth() - date.getMonth(),
       years,
     };
   }
 
   bestFit(diff) {
     switch (true) {
-      case diff.years > 0:
+      case diff.years > 0 && diff.months > 11:
         return 'year';
-      case diff.months > 0:
+      case diff.months > 0 && diff.days > 27:
         return 'month';
-      case diff.weeks > 0:
+      case diff.weeks > 0 && diff.days > 6:
         return 'week';
-      case diff.days > 0:
+      case diff.days > 0 && diff.hours > 23:
         return 'day';
-      case diff.hours > 0:
+      case diff.hours > 0 && diff.minutes > 59:
         return 'hour';
-      case diff.minutes > 0:
+      case diff.minutes > 0 && diff.seconds > 59:
         return 'minute';
       default:
         return 'second';
     }
   }
 
-  convertToUTC(value) {
-    return Date.UTC(
-      value.getFullYear(),
-      value.getMonth(),
-      value.getDay(),
-      value.getHours(),
-      value.getMinutes(),
-      value.getSeconds(),
-      value.getMilliseconds()
-    );
-  }
-
-  updateRelativeTime(value, utc, unit) {
-    if (this.timer) window.clearTimeout(this.timer);
-
-    const diff = this.getRelativeTimeDiff(value, utc);
+  updateRelativeTime(value, unit) {
+    const diff = this.getRelativeTimeDiff(value);
     if (!diff) return;
 
     const finalUnit = unit || this.bestFit(diff);
     let time = diff[`${finalUnit}s`];
 
     if (finalUnit === 'second') {
-      switch (true) {
-        case time < 45:
-          time = 45;
-          break;
-        case time < 20:
-          time = 20;
-          break;
-        case time < 5:
-          time = 5;
-          break;
-        default:
-          time = 45;
-      }
+      let normTime = 45;
+      if (time < 20) normTime = 20;
+      if (time < 5) normTime = 5;
+      time = normTime;
     }
 
     this.setState({
-      relativeTime: {
-        value: time,
-        string: this.getRelativeTimeString(time, finalUnit),
-      },
+      relativeTime: this.getRelativeTimeString(time, finalUnit),
     });
+  }
 
-    if (finalUnit !== 'year' || finalUnit !== 'month' || finalUnit !== 'week') {
-      this.timer = setTimeout(
-        () => this.updateRelativeTime(value, utc, unit),
-        msAmountIn[finalUnit] + 100
-      );
-    }
+  runSelfAdjustingTimer(fn) {
+    this.timer = setTimeout(function step() {
+      if (this.timer) window.clearTimeout(this.timer);
+      const dt = Date.now() - this.expectedTimerDiff;
+      this.expectedTimerDiff += 1000;
+      fn();
+      this.timer = setTimeout(step, Math.max(0, 1000 - dt) + 10);
+    }, 10);
   }
 
   checkForRelativeTimeProps(props) {
     if (props.relativeTime) {
-      this.updateRelativeTime(props.value, props.utc, props.unit);
+      this.runSelfAdjustingTimer(
+        () => this.updateRelativeTime(props.value, props.unit)
+      );
     }
   }
 
@@ -166,7 +140,7 @@ class Time extends Component {
         {
           this.isDate(value) ?
           (
-            relativeTime ? this.state.relativeTime.string : dateformat(new Date(value), format, utc)
+            relativeTime ? this.state.relativeTime : dateformat(new Date(value), format, utc)
           ) : placeholder
         }
       </span>
