@@ -12,9 +12,8 @@ class Time extends Component {
   constructor(props) {
     super(props);
     this.updateRelativeTime = this.updateRelativeTime.bind(this);
-    this.getRelativeTimeDiff = this.getRelativeTimeDiff.bind(this);
-    this.getRelativeTimeString = this.getRelativeTimeString.bind(this);
     this.runSelfAdjustingTimer = this.runSelfAdjustingTimer.bind(this);
+    this.checkForRelativeTimeProps = this.checkForRelativeTimeProps.bind(this);
     this.state = {
       relativeTime: '',
     };
