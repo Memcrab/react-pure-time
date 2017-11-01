@@ -65,6 +65,7 @@ class Time extends Component {
 
   getInterval() {
     if (!this.currentUnit.length) return 10;
+    if (!msAmountIn[this.currentUnit]) return msAmountIn.week;
     return msAmountIn[this.currentUnit];
   }
 
@@ -74,16 +75,8 @@ class Time extends Component {
       this.updateRelativeTime(date, props.unit);
 
       if (this.interval) window.clearInterval(this.interval);
-      const that = this;
       this.interval = setInterval(
-        function step() {
-          const prevUnit = that.currentUnit;
-          that.updateRelativeTime(date, props.unit);
-          if (that.currentUnit !== prevUnit) {
-            window.clearInterval(that.interval);
-            that.interval = setInterval(step, that.getInterval());
-          }
-        }
+          () => this.updateRelativeTime(date, props.unit)
       , this.getInterval());
     }
   }
@@ -91,7 +84,12 @@ class Time extends Component {
   updateRelativeTime(date, unit) {
     const diff = this.getRelativeTimeDiff(date);
 
+    const prevUnit = this.currentUnit;
     this.currentUnit = unit || this.bestFit(diff);
+    if (this.currentUnit !== prevUnit) {
+      this.checkForRelativeTimeProps(this.props);
+    }
+
     let time = diff[`${this.currentUnit}s`];
     let absTime = Math.abs(time);
     const isFuture = time < 0;

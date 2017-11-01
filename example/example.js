@@ -65,10 +65,10 @@ class ModalContainer extends React.Component {
               <td><Time value="2003 36 2003" format="d.m.Y H:i:s" utc /></td>
             </tr>
             <tr>
-              <td>2003 36 2003</td>
+              <td>September 2, 2003, 2:26 am</td>
               <td>relativeTime</td>
-              <td><Time value="Wed Nov 08 2017 15:16:03 GMT+0200 (EET)" relativeTime /></td>
-              <td><Time value="Wed Nov 01 2017 15:41:03 GMT+0200 (EET)" relativeTime utc /></td>
+              <td><Time value="September 2, 2003, 2:26 am" relativeTime /></td>
+              <td><Time value="Wed Nov 01 2017 17:29:03 GMT+0200 (EET)" relativeTime utc /></td>
             </tr>
           </tbody>
         </table>
