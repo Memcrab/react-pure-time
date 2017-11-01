@@ -1,5 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+// @flow
+import React, { Component } from 'react';
 import dateformat from './format.js';
+import type {
+  Props,
+  State,
+  Diff,
+} from './types.js';
 
 const msAmountIn = {
   second: 1000,
@@ -9,8 +15,14 @@ const msAmountIn = {
   week: 1000 * 60 * 60 * 24 * 7,
 };
 
-class Time extends Component {
-  constructor(props) {
+class Time extends Component<Props, State> {
+  static defaultProps = {
+    placeholder: '—',
+    format: 'd.m.Y H:i',
+    utc: false,
+  }
+
+  constructor(props: Props) {
     super(props);
     this.updateRelativeTime = this.updateRelativeTime.bind(this);
     this.checkForRelativeTimeProps = this.checkForRelativeTimeProps.bind(this);
@@ -21,15 +33,18 @@ class Time extends Component {
     this.currentUnit = '';
   }
 
+  interval: ?number;
+  currentUnit: string;
+
   componentWillMount() {
     this.checkForRelativeTimeProps(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     this.checkForRelativeTimeProps(nextProps);
   }
 
-  getRelativeTimeString(time, absTime, unit, isFuture) {
+  getRelativeTimeString(time: number, absTime: number, unit: string, isFuture: boolean): string {
     const unitDecl = absTime % 100 === 1 || absTime % 10 === 1 ? unit : `${unit}s`;
 
     if (unit === 'second' && time === 0) return 'just now';
@@ -39,7 +54,7 @@ class Time extends Component {
     return `${isFuture ? 'will come in' : ''} ${absTime} ${unitDecl} ${isFuture ? '' : 'ago'}`;
   }
 
-  getRelativeTimeDiff(value) {
+  getRelativeTimeDiff(value: Date): Diff {
     const date = value;
     const now = new Date();
 
@@ -69,7 +84,8 @@ class Time extends Component {
     return msAmountIn[this.currentUnit];
   }
 
-  checkForRelativeTimeProps(props) {
+  checkForRelativeTimeProps: Function;
+  checkForRelativeTimeProps(props: Props): void {
     if (props.relativeTime && this.isDate(props.value)) {
       const date = new Date(props.value);
       this.updateRelativeTime(date, props.unit);
@@ -81,13 +97,15 @@ class Time extends Component {
     }
   }
 
-  updateRelativeTime(date, unit) {
+  updateRelativeTime: Function;
+  updateRelativeTime(date: Date, unit: string): boolean {
     const diff = this.getRelativeTimeDiff(date);
 
     const prevUnit = this.currentUnit;
     this.currentUnit = unit || this.bestFit(diff);
     if (this.currentUnit !== prevUnit) {
-      return this.checkForRelativeTimeProps(this.props);
+      this.checkForRelativeTimeProps(this.props);
+      return false;
     }
 
     let time = diff[`${this.currentUnit}s`];
@@ -107,9 +125,10 @@ class Time extends Component {
     this.setState({
       relativeTime: this.getRelativeTimeString(time, absTime, this.currentUnit, isFuture),
     });
+    return true;
   }
 
-  bestFit(diff) {
+  bestFit(diff: Diff): string {
     const seconds = Math.abs(diff.seconds);
     const minutes = Math.abs(diff.minutes);
     const hours = Math.abs(diff.hours);
@@ -136,7 +155,7 @@ class Time extends Component {
     }
   }
 
-  isDate(value) {
+  isDate(value: string | number | Date): boolean {
     const testDate = new Date(value);
     if (Object.prototype.toString.call(testDate) !== '[object Date]') return false;
     return !isNaN(testDate.getTime());
@@ -163,27 +182,6 @@ class Time extends Component {
     );
   }
 }
-
-Time.defaultProps = {
-  placeholder: '—',
-  format: 'd.m.Y H:i',
-  utc: false,
-};
-
-
-Time.propTypes = {
-  className: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.instanceOf(Date),
-  ]),
-  placeholder: PropTypes.string,
-  utc: PropTypes.bool,
-  format: PropTypes.string,
-  relativeTime: PropTypes.bool,
-  unit: PropTypes.string,
-};
 
 export const format = dateformat;
 export default Time;
