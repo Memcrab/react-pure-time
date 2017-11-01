@@ -2,23 +2,22 @@ import React, { Component, PropTypes } from 'react';
 import dateformat from './format.js';
 
 const msAmountIn = {
-  second: 1e3,
-  minute: 6e4,
-  hour: 36e5,
-  day: 864e5,
+  second: 1000,
+  minute: 1000 * 60,
+  hour: 1000 * 60 * 60,
+  day: 1000 * 60 * 60 * 24,
+  week: 1000 * 60 * 60 * 24 * 7,
 };
 
 class Time extends Component {
   constructor(props) {
     super(props);
     this.updateRelativeTime = this.updateRelativeTime.bind(this);
-    this.runSelfAdjustingTimer = this.runSelfAdjustingTimer.bind(this);
     this.checkForRelativeTimeProps = this.checkForRelativeTimeProps.bind(this);
     this.state = {
       relativeTime: '',
     };
-    this.timer = null;
-    this.expectedTimerDiff = Date.now() + 1000;
+    this.interval = null;
   }
 
   componentWillMount() {
@@ -29,12 +28,14 @@ class Time extends Component {
     this.checkForRelativeTimeProps(nextProps);
   }
 
-  getRelativeTimeString(time, unit) {
+  getRelativeTimeString(time, absTime, unit, isFuture) {
+    const unitDecl = absTime % 100 === 1 || absTime % 10 === 1 ? unit : `${unit}s`;
+
     if (unit === 'second' && time === 0) return 'just now';
     if (unit === 'year' && time === 0) return 'this year';
     if (unit === 'year' && time === 1) return 'last year';
 
-    return `${time} ${time % 100 === 1 || time % 10 === 1 ? `${unit}` : `${unit}s`} ago`;
+    return `${isFuture ? 'will come in' : ''} ${absTime} ${unitDecl} ${isFuture ? '' : 'ago'}`;
   }
 
   getRelativeTimeDiff(value) {
@@ -45,10 +46,6 @@ class Time extends Component {
     const nowMs = now.getTime();
 
     const ms = nowMs - dateMs;
-    if (ms < 0) {
-      console.warn('Your date from future!');
-      return false;
-    }
 
     const years = now.getFullYear() - date.getFullYear();
 
@@ -58,24 +55,33 @@ class Time extends Component {
       minutes: Math.floor(ms / msAmountIn.minute),
       hours: Math.floor(ms / msAmountIn.hour),
       days: Math.floor(ms / msAmountIn.day),
+      weeks: Math.floor(ms / msAmountIn.week),
       months: years * 12 + now.getMonth() - date.getMonth(),
       years,
     };
   }
 
   bestFit(diff) {
+    const seconds = Math.abs(diff.seconds);
+    const minutes = Math.abs(diff.minutes);
+    const hours = Math.abs(diff.hours);
+    const days = Math.abs(diff.days);
+    const weeks = Math.abs(diff.weeks);
+    const months = Math.abs(diff.months);
+    const years = Math.abs(diff.years);
+
     switch (true) {
-      case diff.years > 0 && diff.months > 11:
+      case years > 0 && months > 11:
         return 'year';
-      case diff.months > 0 && diff.days > 27:
+      case months > 0 && days > 27:
         return 'month';
-      case diff.weeks > 0 && diff.days > 6:
+      case weeks > 0 && days > 6:
         return 'week';
-      case diff.days > 0 && diff.hours > 23:
+      case days > 0 && hours > 23:
         return 'day';
-      case diff.hours > 0 && diff.minutes > 59:
+      case hours > 0 && minutes > 59:
         return 'hour';
-      case diff.minutes > 0 && diff.seconds > 59:
+      case minutes > 0 && seconds > 59:
         return 'minute';
       default:
         return 'second';
@@ -84,38 +90,33 @@ class Time extends Component {
 
   updateRelativeTime(value, unit) {
     const diff = this.getRelativeTimeDiff(value);
-    if (!diff) return;
 
     const finalUnit = unit || this.bestFit(diff);
     let time = diff[`${finalUnit}s`];
+    let absTime = Math.abs(time);
+    const isFuture = time < 0;
 
     if (finalUnit === 'second') {
       let normTime = 45;
-      if (time < 20) normTime = 20;
-      if (time < 5) normTime = 5;
-      time = normTime;
+      if (absTime < 45) normTime = 20;
+      if (absTime < 20) normTime = 5;
+      if (absTime < 5) normTime = 0;
+      if (absTime === 0) normTime = 0;
+      time = isFuture ? -(normTime) : normTime;
+      absTime = Math.abs(time);
     }
 
     this.setState({
-      relativeTime: this.getRelativeTimeString(time, finalUnit),
+      relativeTime: this.getRelativeTimeString(time, absTime, finalUnit, isFuture),
     });
   }
 
-  runSelfAdjustingTimer(fn) {
-    this.timer = setTimeout(function step() {
-      if (this.timer) window.clearTimeout(this.timer);
-      const dt = Date.now() - this.expectedTimerDiff;
-      this.expectedTimerDiff += 1000;
-      fn();
-      this.timer = setTimeout(step, Math.max(0, 1000 - dt) + 10);
-    }, 10);
-  }
-
   checkForRelativeTimeProps(props) {
-    if (props.relativeTime) {
-      this.runSelfAdjustingTimer(
-        () => this.updateRelativeTime(props.value, props.unit)
-      );
+    if (props.relativeTime && this.isDate(props.value)) {
+      if (this.interval) window.clearInterval(this.interval);
+      this.interval = setInterval(
+        () => this.updateRelativeTime(new Date(props.value), props.unit)
+      , 100);
     }
   }
 
