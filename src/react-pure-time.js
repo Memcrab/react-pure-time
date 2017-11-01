@@ -18,6 +18,7 @@ class Time extends Component {
       relativeTime: '',
     };
     this.interval = null;
+    this.currentUnit = '';
   }
 
   componentWillMount() {
@@ -48,17 +49,66 @@ class Time extends Component {
     const ms = nowMs - dateMs;
 
     const years = now.getFullYear() - date.getFullYear();
+    const round = Math[ms > 0 ? 'floor' : 'ceil'];
 
     return {
       ms,
-      seconds: Math.floor(ms / msAmountIn.second),
-      minutes: Math.floor(ms / msAmountIn.minute),
-      hours: Math.floor(ms / msAmountIn.hour),
-      days: Math.floor(ms / msAmountIn.day),
-      weeks: Math.floor(ms / msAmountIn.week),
+      seconds: round(ms / msAmountIn.second),
+      minutes: round(ms / msAmountIn.minute),
+      hours: round(ms / msAmountIn.hour),
+      days: round(ms / msAmountIn.day),
+      weeks: round(ms / msAmountIn.week),
       months: years * 12 + now.getMonth() - date.getMonth(),
       years,
     };
+  }
+
+  getInterval() {
+    if (!this.currentUnit.length) return 10;
+    return msAmountIn[this.currentUnit];
+  }
+
+  checkForRelativeTimeProps(props) {
+    if (props.relativeTime && this.isDate(props.value)) {
+      const date = new Date(props.value);
+      this.updateRelativeTime(date, props.unit);
+
+      if (this.interval) window.clearInterval(this.interval);
+      const that = this;
+      this.interval = setInterval(
+        function step() {
+          const prevUnit = that.currentUnit;
+          that.updateRelativeTime(date, props.unit);
+          if (that.currentUnit !== prevUnit) {
+            window.clearInterval(that.interval);
+            that.interval = setInterval(step, that.getInterval());
+          }
+        }
+      , this.getInterval());
+    }
+  }
+
+  updateRelativeTime(date, unit) {
+    const diff = this.getRelativeTimeDiff(date);
+
+    this.currentUnit = unit || this.bestFit(diff);
+    let time = diff[`${this.currentUnit}s`];
+    let absTime = Math.abs(time);
+    const isFuture = time < 0;
+
+    if (this.currentUnit === 'second') {
+      let normTime = 45;
+      if (absTime < 45) normTime = 20;
+      if (absTime < 20) normTime = 5;
+      if (absTime < 5) normTime = 0;
+      if (absTime === 0) normTime = 0;
+      time = isFuture ? -(normTime) : normTime;
+      absTime = Math.abs(time);
+    }
+
+    this.setState({
+      relativeTime: this.getRelativeTimeString(time, absTime, this.currentUnit, isFuture),
+    });
   }
 
   bestFit(diff) {
@@ -85,40 +135,6 @@ class Time extends Component {
         return 'minute';
       default:
         return 'second';
-    }
-  }
-
-  updateRelativeTime(value, unit) {
-    const diff = this.getRelativeTimeDiff(value);
-
-    const finalUnit = unit || this.bestFit(diff);
-    let time = diff[`${finalUnit}s`];
-    let absTime = Math.abs(time);
-    const isFuture = time < 0;
-
-    if (finalUnit === 'second') {
-      let normTime = 45;
-      if (absTime < 45) normTime = 20;
-      if (absTime < 20) normTime = 5;
-      if (absTime < 5) normTime = 0;
-      if (absTime === 0) normTime = 0;
-      time = isFuture ? -(normTime) : normTime;
-      absTime = Math.abs(time);
-    }
-
-    this.setState({
-      relativeTime: this.getRelativeTimeString(time, absTime, finalUnit, isFuture),
-    });
-  }
-
-  checkForRelativeTimeProps(props) {
-    if (props.relativeTime && this.isDate(props.value)) {
-      this.updateRelativeTime(new Date(props.value), props.unit);
-
-      if (this.interval) window.clearInterval(this.interval);
-      this.interval = setInterval(
-        () => this.updateRelativeTime(new Date(props.value), props.unit)
-      , 1000);
     }
   }
 
