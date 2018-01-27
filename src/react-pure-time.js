@@ -19,6 +19,7 @@ class Time extends Component<Props, State> {
   static defaultProps = {
     placeholder: '—',
     format: 'd.m.Y H:i',
+    className: '',
     utc: false,
   }
 

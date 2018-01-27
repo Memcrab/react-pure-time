@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Time component behavior Applies custom styles 1`] = `
+<span
+  className="customName"
+>
+  —
+</span>
+`;
+
+exports[`Time component behavior Checks value and renders placeholder if its invalid 1`] = `
+<span
+  className=""
+>
+  —
+</span>
+`;
+
+exports[`Time component behavior Checks value and renders placeholder if its invalid with UTC 1`] = `
+<span
+  className=""
+>
+  —
+</span>
+`;
+
+exports[`Time component behavior Renders custom placeholder with UTC flag 1`] = `
+<span
+  className=""
+>
+  no time defined
+</span>
+`;
+
+exports[`Time component behavior Renders custom placeholder with empty value 1`] = `
+<span
+  className=""
+>
+  no time defined
+</span>
+`;
+
+exports[`Time component behavior Renders date value with custom format H:i:s 1`] = `
+<span
+  className=""
+>
+  17:18:52
+</span>
+`;
+
+exports[`Time component behavior Renders date value with custom format H:i:s and UTC flag 1`] = `
+<span
+  className=""
+>
+  15:18:52
+</span>
+`;
+
+exports[`Time component behavior Renders date value with default format 1`] = `
+<span
+  className=""
+>
+  20.12.2009 17:18
+</span>
+`;
+
+exports[`Time component behavior Renders default placeholder with UTC flag 1`] = `
+<span
+  className=""
+>
+  —
+</span>
+`;
+
+exports[`Time component behavior Renders default placeholder with empty props 1`] = `
+<span
+  className=""
+>
+  —
+</span>
+`;
+
+exports[`Time component behavior Renders right with milliseconds value 1`] = `
+<span
+  className=""
+>
+  20.12.2009 17:18:52
+</span>
+`;
+
+exports[`Time component behavior Renders right with milliseconds value and UTC 1`] = `
+<span
+  className=""
+>
+  20.12.2009 15:18:52
+</span>
+`;
+
+exports[`Time component behavior Renders right with object value 1`] = `
+<span
+  className=""
+>
+  20.12.2009 17:18:52
+</span>
+`;
+
+exports[`Time component behavior Renders right with object value and UTC 1`] = `
+<span
+  className=""
+>
+  20.12.2009 15:18:52
+</span>
+`;
+
+exports[`Time component behavior Renders right with string "1990-06-16 13:22:17" and UTC 1`] = `
+<span
+  className=""
+>
+  16.06.1990 10:22:17
+</span>
+`;
+
+exports[`Time component behavior Renders right with string "September 2, 2003, 2:26 am" 1`] = `
+<span
+  className=""
+>
+  02.09.2003 02:26:00
+</span>
+`;
+
+exports[`Time component behavior Renders right with string "September 2, 2003, 2:26 am" and UTC 1`] = `
+<span
+  className=""
+>
+  01.09.2003 23:26:00
+</span>
+`;
+
+exports[`Time component behavior Renders right with string 1990-06-16 13:22:17 1`] = `
+<span
+  className=""
+>
+  16.06.1990 13:22:17
+</span>
+`;

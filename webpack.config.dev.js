@@ -7,8 +7,14 @@ const config = {
     example: path.join(__dirname, 'example/example.js'),
   },
   module: {
-    loaders: [
-      { test: /\.js$/, loaders: ['babel-loader'], exclude: /(node_modules|dist)/ },
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
     ],
   },
   output: {
@@ -16,14 +22,13 @@ const config = {
     filename: '[name].min.js',
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(env),
     }),
   ],
   resolve: {
-    modulesDirectories: ['node_modules'],
-    extensions: ['', '.js'],
+    modules: ['node_modules'],
+    extensions: ['.js'],
   },
 };
 

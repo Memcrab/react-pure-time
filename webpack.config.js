@@ -14,8 +14,14 @@ const config = {
     'react-pure-time': path.join(__dirname, './src/react-pure-time.js'),
   },
   module: {
-    loaders: [
-      { test: /\.js$/, loaders: ['babel-loader'], exclude: /(node_modules|dist)/ },
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|dist)/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
     ],
   },
   output: {
@@ -24,14 +30,13 @@ const config = {
     libraryTarget: 'umd',
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(env),
     }),
   ],
   resolve: {
-    modulesDirectories: ['node_modules'],
-    extensions: ['', '.js'],
+    modules: ['node_modules'],
+    extensions: ['.js'],
   },
   externals: {
     react: reactExternal,
