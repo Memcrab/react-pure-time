@@ -1,4 +1,4 @@
-# react-pure-time
+# react-pure-time [![npm package](https://img.shields.io/npm/v/react-pure-time.svg?style=flat-square)](https://www.npmjs.org/package/react-pure-time) [![Build Status](https://travis-ci.org/memCrab/react-pure-time.svg?branch=master)](https://travis-ci.org/memCrab/react-pure-time) [![Dependency Status](https://david-dm.org/memCrab/react-pure-time.svg)](https://david-dm.org/memCrab/react-pure-time)
 React component which convert js date object, milliseconds to human readable format
 
 ## Features
