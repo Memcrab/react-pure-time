@@ -1,13 +1,13 @@
 // @flow
 
 export type Props = {
-  className: string,
+  className?: string,
   value: string | number | Date,
-  placeholder: string,
-  utc: boolean,
-  format: string,
-  relativeTime: boolean,
-  unit: string,
+  placeholder?: string,
+  utc?: boolean,
+  format?: string,
+  relativeTime?: boolean,
+  unit?: string,
 };
 
 export type State = {

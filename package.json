@@ -11,7 +11,7 @@
     "webpack:dev": "webpack --config webpack.config.dev.js",
     "webpack:prod": "webpack --config webpack.config.js",
     "release": "node ./scripts/release.js",
-    "test": "jest --ci",
+    "test": "jest --ci && flow check",
     "test:dev": "jest --watch",
     "flow": "flow"
   },
