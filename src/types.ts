@@ -9,6 +9,8 @@ export type Props = {
 };
 
 export type State = {
+  interval: null | number;
+  currentUnit: string;
   relativeTime: string;
 };
 
