@@ -1,83 +1,81 @@
 /* global describe expect it */
-import React from 'react';
-import Time from '../src/react-pure-time.js';
-import renderer from 'react-test-renderer';
+import React from "react";
+import Time from "../src/react-pure-time.tsx";
+import renderer from "react-test-renderer";
 
-describe('Time component behavior', () => {
-  it('Renders default placeholder with empty props', () => {
+describe("Time component behavior", () => {
+  it("Renders default placeholder with empty props", () => {
     const TimeComponent = renderer.create(<Time />);
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders default placeholder with UTC flag', () => {
+  it("Renders default placeholder with UTC flag", () => {
     const TimeComponent = renderer.create(<Time utc />);
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders custom placeholder with empty value', () => {
+  it("Renders custom placeholder with empty value", () => {
     const TimeComponent = renderer.create(
       <Time placeholder="no time defined" />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders custom placeholder with UTC flag', () => {
+  it("Renders custom placeholder with UTC flag", () => {
     const TimeComponent = renderer.create(
       <Time placeholder="no time defined" utc />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders date value with default format', () => {
-    const TimeComponent = renderer.create(
-      <Time value={1261322332312} />
-    );
+  it("Renders date value with default format", () => {
+    const TimeComponent = renderer.create(<Time value={1261322332312} />);
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders date value with custom format H:i:s', () => {
+  it("Renders date value with custom format H:i:s", () => {
     const TimeComponent = renderer.create(
       <Time value={1261322332312} format="H:i:s" />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders date value with custom format H:i:s and UTC flag', () => {
+  it("Renders date value with custom format H:i:s and UTC flag", () => {
     const TimeComponent = renderer.create(
       <Time value={1261322332312} format="H:i:s" utc />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders right with milliseconds value', () => {
+  it("Renders right with milliseconds value", () => {
     const TimeComponent = renderer.create(
       <Time value={1261322332312} format="d.m.Y H:i:s" />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders right with milliseconds value and UTC', () => {
+  it("Renders right with milliseconds value and UTC", () => {
     const TimeComponent = renderer.create(
       <Time value={1261322332312} format="d.m.Y H:i:s" utc />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders right with object value', () => {
+  it("Renders right with object value", () => {
     const TimeComponent = renderer.create(
       <Time value={new Date(1261322332312)} format="d.m.Y H:i:s" />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders right with object value and UTC', () => {
+  it("Renders right with object value and UTC", () => {
     const TimeComponent = renderer.create(
       <Time value={new Date(1261322332312)} format="d.m.Y H:i:s" utc />
     );
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Renders right with string 1990-06-16 13:22:17', () => {
+  it("Renders right with string 1990-06-16 13:22:17", () => {
     const TimeComponent = renderer.create(
       <Time value="1990-06-16 13:22:17" format="d.m.Y H:i:s" />
     );
@@ -105,27 +103,20 @@ describe('Time component behavior', () => {
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Checks value and renders placeholder if its invalid', () => {
-    const TimeComponent = renderer.create(
-      <Time value="2003 36 2003" />
-    );
+  it("Checks value and renders placeholder if its invalid", () => {
+    const TimeComponent = renderer.create(<Time value="2003 36 2003" />);
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Checks value and renders placeholder if its invalid with UTC', () => {
-    const TimeComponent = renderer.create(
-      <Time value="2003 36 2003" utc />
-    );
+  it("Checks value and renders placeholder if its invalid with UTC", () => {
+    const TimeComponent = renderer.create(<Time value="2003 36 2003" utc />);
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 
-  it('Checks value and renders custom placeholder if its invalid', () => {
-  });
+  it("Checks value and renders custom placeholder if its invalid", () => {});
 
-  it('Applies custom styles', () => {
-    const TimeComponent = renderer.create(
-      <Time className="customName" />
-    );
+  it("Applies custom styles", () => {
+    const TimeComponent = renderer.create(<Time className="customName" />);
     expect(TimeComponent.toJSON()).toMatchSnapshot();
   });
 });

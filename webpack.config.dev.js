@@ -1,49 +1,41 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require("path");
+const webpack = require("webpack");
 const env = process.env.NODE_ENV;
+const TerserPlugin = require("terser-webpack-plugin");
 
 const config = {
   entry: {
-    example: path.join(__dirname, 'example/example.js'),
+    example: path.join(__dirname, "example/example.tsx"),
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|(j|t)sx?)$/,
         exclude: /(node_modules)/,
-        use: {
-          loader: 'babel-loader',
-        },
+        use: [{ loader: "babel-loader" }, { loader: "ts-loader" }],
       },
     ],
   },
   output: {
-    path: path.join(__dirname, 'example/'),
-    filename: '[name].min.js',
+    path: path.join(__dirname, "example/"),
+    filename: "[name].min.js",
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(env),
+      "process.env.NODE_ENV": JSON.stringify(env),
     }),
   ],
   resolve: {
-    modules: ['node_modules'],
-    extensions: ['.js'],
+    modules: ["node_modules"],
+    extensions: [".ts", ".js", ".tsx"],
   },
 };
 
-if (env === 'production') {
-  config.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        pure_getters: true,
-        unsafe: true,
-        unsafe_comps: true,
-        screw_ie8: true,
-        warnings: false,
-      },
-    })
-  );
+if (env === "production") {
+  config.optimization = {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  };
 }
 
 module.exports = config;

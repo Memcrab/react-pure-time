@@ -116,7 +116,7 @@ exports[`Time component behavior Renders right with string "1990-06-16 13:22:17"
 <span
   className=""
 >
-  16.06.1990 10:22:17
+  16.06.1990 09:22:17
 </span>
 `;
 
