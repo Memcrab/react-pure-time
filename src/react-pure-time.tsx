@@ -19,11 +19,11 @@ const Time = (props: Props) => {
     utc = false,
     relativeTime,
   } = props;
+  let interval: null | number = null,
+    currentUnit: string = "";
 
   const [state, setState] = React.useState<State>({
     relativeTime: "",
-    interval: null,
-    currentUnit: "",
   });
 
   const checkForRelativeTimeProps = (props: Props): void => {
@@ -31,14 +31,12 @@ const Time = (props: Props) => {
       const date = new Date(props.value);
       updateRelativeTime(date, props.unit);
 
-      if (state.interval) window.clearInterval(state.interval);
-      setState({
-        ...state,
-        interval: window.setInterval(
-          () => updateRelativeTime(date, props.unit),
-          getInterval()
-        ),
-      });
+      if (interval) window.clearInterval(interval);
+
+      interval = window.setInterval(
+        () => updateRelativeTime(date, props.unit),
+        getInterval()
+      );
     }
   };
 
@@ -89,24 +87,21 @@ const Time = (props: Props) => {
   };
 
   const getInterval = () => {
-    if (!state.currentUnit.length) return 10;
-    if (!msAmountIn[state.currentUnit]) return msAmountIn.week;
-    return msAmountIn[state.currentUnit];
+    if (!currentUnit.length) return 10;
+    if (!msAmountIn[currentUnit]) return msAmountIn.week;
+    return msAmountIn[currentUnit];
   };
 
   const updateRelativeTime = (date: Date, unit: string): boolean => {
     const diff = getRelativeTimeDiff(date);
 
-    const prevUnit = state.currentUnit;
-    setState({
-      ...state,
-      currentUnit: unit || bestFit(diff),
-    });
-    if (state.currentUnit !== prevUnit) {
+    let prevUnit = currentUnit;
+    currentUnit = unit || bestFit(diff);
+    if (currentUnit !== prevUnit) {
       checkForRelativeTimeProps(props);
       return false;
     }
-    const diffkey = `${state.currentUnit}s` as
+    const diffkey = `${currentUnit}s` as
       | "ms"
       | "seconds"
       | "minutes"
@@ -119,7 +114,7 @@ const Time = (props: Props) => {
     let absTime = Math.abs(time);
     const isFuture = time < 0;
 
-    if (state.currentUnit === "second") {
+    if (currentUnit === "second") {
       let normTime = 45;
       if (absTime < 45) normTime = 20;
       if (absTime < 20) normTime = 5;
@@ -130,13 +125,7 @@ const Time = (props: Props) => {
     }
 
     setState({
-      ...state,
-      relativeTime: getRelativeTimeString(
-        time,
-        absTime,
-        state.currentUnit,
-        isFuture
-      ),
+      relativeTime: getRelativeTimeString(time, absTime, currentUnit, isFuture),
     });
     return true;
   };
