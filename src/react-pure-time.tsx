@@ -19,8 +19,7 @@ const Time = (props: Props) => {
     utc = false,
     relativeTime,
   } = props;
-  let interval: null | number = null,
-    currentUnit: string = "";
+  let currentUnit: string = "";
 
   const [state, setState] = React.useState<State>({
     relativeTime: "",
@@ -30,18 +29,23 @@ const Time = (props: Props) => {
     if (props.relativeTime && isDate(props.value)) {
       const date = new Date(props.value);
       updateRelativeTime(date, props.unit);
+    }
+  };
 
-      if (interval) window.clearInterval(interval);
-
+  React.useEffect(() => {
+    let interval: null | number = null;
+    if (props.relativeTime && isDate(props.value) && !interval) {
+      const date = new Date(props.value);
+      updateRelativeTime(date, props.unit);
       interval = window.setInterval(
         () => updateRelativeTime(date, props.unit),
         getInterval()
       );
     }
-  };
 
-  React.useEffect(() => {
-    checkForRelativeTimeProps(props);
+    return () => {
+      if (interval) window.clearInterval(interval);
+    };
   }, []);
 
   const getRelativeTimeString = (
