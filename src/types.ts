@@ -10,6 +10,7 @@ export type Props = {
 
 export type State = {
   relativeTime: string;
+  currentUnit: string;
 };
 
 export type Diff = {

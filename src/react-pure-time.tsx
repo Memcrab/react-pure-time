@@ -19,26 +19,19 @@ const Time = (props: Props) => {
     utc = false,
     relativeTime,
   } = props;
-  let currentUnit: string = "";
 
   const [state, setState] = React.useState<State>({
     relativeTime: "",
+    currentUnit: "",
   });
-
-  const checkForRelativeTimeProps = (props: Props): void => {
-    if (props.relativeTime && isDate(props.value)) {
-      const date = new Date(props.value);
-      updateRelativeTime(date, props.unit);
-    }
-  };
 
   React.useEffect(() => {
     let interval: null | number = null;
     if (props.relativeTime && isDate(props.value) && !interval) {
       const date = new Date(props.value);
-      updateRelativeTime(date, props.unit);
+      updateRelativeTime(date);
       interval = window.setInterval(
-        () => updateRelativeTime(date, props.unit),
+        () => updateRelativeTime(date),
         getInterval()
       );
     }
@@ -91,20 +84,17 @@ const Time = (props: Props) => {
   };
 
   const getInterval = () => {
+    const { currentUnit } = state;
     if (!currentUnit.length) return 10;
     if (!msAmountIn[currentUnit]) return msAmountIn.week;
     return msAmountIn[currentUnit];
   };
 
-  const updateRelativeTime = (date: Date, unit: string): boolean => {
+  const updateRelativeTime = (date: Date): boolean => {
     const diff = getRelativeTimeDiff(date);
+    state.currentUnit = props.unit || bestFit(diff);
+    const { currentUnit } = state;
 
-    let prevUnit = currentUnit;
-    currentUnit = unit || bestFit(diff);
-    if (currentUnit !== prevUnit) {
-      checkForRelativeTimeProps(props);
-      return false;
-    }
     const diffkey = `${currentUnit}s` as
       | "ms"
       | "seconds"
@@ -129,6 +119,7 @@ const Time = (props: Props) => {
     }
 
     setState({
+      ...state,
       relativeTime: getRelativeTimeString(time, absTime, currentUnit, isFuture),
     });
     return true;
