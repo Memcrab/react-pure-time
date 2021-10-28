@@ -139,7 +139,7 @@ const Time = (props: Props) => {
 
   React.useEffect(() => {
     let interval: null | number = null;
-    if (props.relativeTime && isDate(props.value) && !interval) {
+    if (props.relativeTime && isDate(props.value)) {
       const date = new Date(props.value);
       const diff = getRelativeTimeDiff(date);
       state.currentUnit = props.unit || bestFit(diff);
@@ -148,10 +148,10 @@ const Time = (props: Props) => {
         ...state,
         relativeTime: updateRelativeTime(date, state.currentUnit),
       });
-      interval = window.setInterval(
-        () => updateRelativeTime(date, state.currentUnit),
-        getInterval(state.currentUnit)
-      );
+      interval = window.setInterval(() => {
+        state.currentUnit = props.unit || bestFit(diff);
+        updateRelativeTime(date, state.currentUnit);
+      }, getInterval(state.currentUnit));
     }
 
     return () => {
