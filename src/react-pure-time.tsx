@@ -138,8 +138,6 @@ const Time = (props: Props) => {
   });
 
   React.useEffect(() => {
-    console.log("rerender", state);
-
     let interval: null | number = null;
     if (props.relativeTime && isDate(props.value)) {
       const date = new Date(props.value);
