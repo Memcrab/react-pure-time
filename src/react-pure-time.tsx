@@ -142,14 +142,20 @@ const Time = (props: Props) => {
     if (props.relativeTime && isDate(props.value)) {
       const date = new Date(props.value);
       const diff = getRelativeTimeDiff(date);
-      state.currentUnit = props.unit || bestFit(diff);
+      setState({
+        ...state,
+        currentUnit: props.unit || bestFit(diff),
+      });
 
       setState({
         ...state,
         relativeTime: updateRelativeTime(date, state.currentUnit),
       });
       interval = window.setInterval(() => {
-        state.currentUnit = props.unit || bestFit(diff);
+        setState({
+          ...state,
+          currentUnit: props.unit || bestFit(diff),
+        });
         updateRelativeTime(date, state.currentUnit);
       }, getInterval(state.currentUnit));
     }
@@ -157,7 +163,7 @@ const Time = (props: Props) => {
     return () => {
       if (interval) window.clearInterval(interval);
     };
-  }, [props.relativeTime, props.value, props.unit]);
+  }, [props.relativeTime, props.value, props.unit, state.currentUnit]);
 
   return (
     <span className={className}>
