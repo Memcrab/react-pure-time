@@ -5,12 +5,20 @@ export type Props = {
   utc?: boolean;
   format?: string;
   relativeTime?: boolean;
-  unit?: string;
+  unit?: "year" | "month" | "week" | "day" | "hour" | "minute" | "second";
 };
 
 export type State = {
   relativeTime: string;
-  currentUnit: string;
+  currentUnit:
+    | "year"
+    | "month"
+    | "week"
+    | "day"
+    | "hour"
+    | "minute"
+    | "second"
+    | "";
 };
 
 export type Diff = {
