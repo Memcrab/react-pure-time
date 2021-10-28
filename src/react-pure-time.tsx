@@ -94,7 +94,7 @@ const getRelativeTimeDiff = (value: Date): Diff => {
   };
 };
 
-const updateRelativeTime = (date: Date, currentUnit: string): string => {
+const calculateRelativeTime = (date: Date, currentUnit: string): string => {
   const diff = getRelativeTimeDiff(date);
   const diffkey = `${currentUnit}s` as
     | "ms"
@@ -149,13 +149,16 @@ const Time = (props: Props) => {
 
       setState({
         ...state,
-        relativeTime: updateRelativeTime(date, state.currentUnit),
+        relativeTime: calculateRelativeTime(date, state.currentUnit),
       });
       interval = window.setInterval(() => {
         const date = new Date(props.value);
         setState({
           currentUnit: props.unit || bestFit(diff),
-          relativeTime: updateRelativeTime(date, props.unit || bestFit(diff)),
+          relativeTime: calculateRelativeTime(
+            date,
+            props.unit || bestFit(diff)
+          ),
         });
       }, getInterval(state.currentUnit));
     }
