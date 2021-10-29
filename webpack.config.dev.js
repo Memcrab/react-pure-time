@@ -19,6 +19,7 @@ const config = {
   output: {
     path: path.join(__dirname, "example/"),
     filename: "[name].min.js",
+    globalObject: "this",
   },
   plugins: [
     new webpack.DefinePlugin({
