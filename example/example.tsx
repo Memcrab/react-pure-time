@@ -100,7 +100,7 @@ const ModalContainer = () => (
           <td>September 2, 2003, 2:26 am</td>
           <td>relativeTime</td>
           <td>
-            <Time value="October 29, 2021, 08:40 am" relativeTime />
+            <Time value="September 2, 2003, 2:26 am" relativeTime />
           </td>
           <td>
             <Time
