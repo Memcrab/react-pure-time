@@ -1,22 +1,35 @@
-// @flow
 // based on phpjs date format library
 type valueType = Date | number | string;
-export default function date(value: valueType, format: string, utc: boolean = false): string {
+export default function date(
+  value: valueType,
+  format: string,
+  utc: boolean = false
+): string {
   const jsdate: Date = new Date(value);
 
   const txtWords: string[] = [
-    'Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur',
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    "Sun",
+    "Mon",
+    "Tues",
+    "Wednes",
+    "Thurs",
+    "Fri",
+    "Satur",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  let f = {};
   const formatChr: RegExp = /\\?(.?)/gi;
-
-  const formatChrCb = (t: string, s: string): string => {
-    if (f[t]) return f[t]();
-    return s;
-  };
 
   const zeroPad = (n: number, c: number): string => {
     let newN: string = String(n);
@@ -26,7 +39,7 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     return newN;
   };
 
-  f = {
+  let f: Record<string, () => any> = {
     // Day
     d(): string {
       // Day of month w/leading 0; 01..31
@@ -34,8 +47,7 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     },
     D(): string {
       // Shorthand day name; Mon...Sun
-      return f.l()
-        .slice(0, 3);
+      return f.l().slice(0, 3);
     },
     j(): number {
       // Day of month; 1..31
@@ -54,10 +66,10 @@ export default function date(value: valueType, format: string, utc: boolean = fa
       // Ordinal suffix for day of month; st, nd, rd, th
       const j: number = f.j();
       let i: number = j % 10;
-      if (i <= 3 && parseInt((j % 100) / 10, 10) === 1) {
+      if (i <= 3 && parseInt(((j % 100) / 10).toString(), 10) === 1) {
         i = 0;
       }
-      return ['st', 'nd', 'rd'][i - 1] || 'th';
+      return ["st", "nd", "rd"][i - 1] || "th";
     },
     w(): number {
       // Day of week; 0[Sun]..6[Sat]
@@ -68,7 +80,7 @@ export default function date(value: valueType, format: string, utc: boolean = fa
       // Day of year; 0..365
       const a: Date = new Date(f.Y(), f.n() - 1, f.j());
       const b: Date = new Date(f.Y(), 0, 1);
-      return Math.round((a - b) / 864e5);
+      return Math.round((Number(a) - Number(b)) / 864e5);
     },
 
     // Week
@@ -81,7 +93,7 @@ export default function date(value: valueType, format: string, utc: boolean = fa
       } else {
         b = new Date(a.getFullYear(), 0, 4);
       }
-      return zeroPad(1 + Math.round((a - b) / 864e5 / 7), 2);
+      return zeroPad(1 + Math.round((Number(a) - Number(b)) / 864e5 / 7), 2);
     },
 
     // Month
@@ -95,8 +107,7 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     },
     M(): string {
       // Shorthand month name; Jan...Dec
-      return f.F()
-        .slice(0, 3);
+      return f.F().slice(0, 3);
     },
     n(): number {
       // Month; 1...12
@@ -105,15 +116,15 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     },
     t(): number {
       // Days in month; 28...31
-      if (utc) return (new Date(f.Y(), f.n(), 0)).getUTCDate();
-      return (new Date(f.Y(), f.n(), 0)).getDate();
+      if (utc) return new Date(f.Y(), f.n(), 0).getUTCDate();
+      return new Date(f.Y(), f.n(), 0).getDate();
     },
 
     // Year
     L(): number {
       // Is leap year?; 0 or 1
       const j: number = f.Y();
-      return (j % 4 === 0 && j % 100 !== 0 || j % 400 === 0) ? 1 : 0;
+      return (j % 4 === 0 && j % 100 !== 0) || j % 400 === 0 ? 1 : 0;
     },
     o(): number {
       // ISO-8601 year
@@ -135,13 +146,12 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     // Time
     a(): string {
       // am or pm
-      if (utc) return jsdate.getUTCHours() > 11 ? 'pm' : 'am';
-      return jsdate.getHours() > 11 ? 'pm' : 'am';
+      if (utc) return jsdate.getUTCHours() > 11 ? "pm" : "am";
+      return jsdate.getHours() > 11 ? "pm" : "am";
     },
     A(): string {
       // AM or PM
-      return f.a()
-        .toUpperCase();
+      return f.a().toUpperCase();
     },
     B(): string {
       // Swatch Internet time; 000..999
@@ -208,13 +218,15 @@ export default function date(value: valueType, format: string, utc: boolean = fa
       // Jul 1
       // Jul 1 UTC
       const d: number = Date.UTC(f.Y(), 6);
-      return (a - c) !== (b - d) ? 1 : 0;
+      return Number(a) - c !== Number(b) - d ? 1 : 0;
     },
     O(): string {
       // Difference to GMT in hour format; e.g. +0200
       const tzo: number = jsdate.getTimezoneOffset();
       const a: number = Math.abs(tzo);
-      return (tzo > 0 ? '-' : '+') + zeroPad(Math.floor(a / 60) * 100 + a % 60, 4);
+      return (
+        (tzo > 0 ? "-" : "+") + zeroPad(Math.floor(a / 60) * 100 + (a % 60), 4)
+      );
     },
     P(): string {
       // Difference to GMT w/colon; e.g. +02:00
@@ -222,8 +234,8 @@ export default function date(value: valueType, format: string, utc: boolean = fa
       return `${O.substr(0, 3)}:${O.substr(3, 2)}`;
     },
     T(): string {
-      if (utc) return 'UTC';
-      return 'LOCAL';
+      if (utc) return "UTC";
+      return "LOCAL";
     },
     Z(): number {
       // Timezone offset in seconds (-43200...50400)
@@ -233,16 +245,21 @@ export default function date(value: valueType, format: string, utc: boolean = fa
     // Full Date/Time
     c(): string {
       // ISO-8601 date.
-      return 'Y-m-d\\TH:i:sP'.replace(formatChr, formatChrCb);
+      return "Y-m-d\\TH:i:sP".replace(formatChr, formatChrCb);
     },
     r(): string {
       // RFC 2822
-      return 'D, d M Y H:i:s O'.replace(formatChr, formatChrCb);
+      return "D, d M Y H:i:s O".replace(formatChr, formatChrCb);
     },
     U(): number {
       // Seconds since UNIX epoch
-      return jsdate / 1000 | 0;
+      return (Number(jsdate) / 1000) | 0;
     },
+  };
+
+  const formatChrCb = (t: string, s: string): string => {
+    if (f[t]) return f[t]();
+    return s;
   };
 
   return format.replace(formatChr, formatChrCb);

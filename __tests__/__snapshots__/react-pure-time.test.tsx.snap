@@ -116,7 +116,7 @@ exports[`Time component behavior Renders right with string "1990-06-16 13:22:17"
 <span
   className=""
 >
-  16.06.1990 10:22:17
+  16.06.1990 09:22:17
 </span>
 `;
 
@@ -141,5 +141,21 @@ exports[`Time component behavior Renders right with string 1990-06-16 13:22:17 1
   className=""
 >
   16.06.1990 13:22:17
+</span>
+`;
+
+exports[`test async behavior of the Time component 1 minute change to hour 1`] = `
+<span
+  className=""
+>
+   1 hour ago
+</span>
+`;
+
+exports[`test async behavior of the Time component Render Time component with relative time 1`] = `
+<span
+  className=""
+>
+   45 minutes ago
 </span>
 `;
