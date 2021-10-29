@@ -153,6 +153,7 @@ const Time = (props: Props) => {
       });
       interval = window.setInterval(() => {
         const date = new Date(props.value);
+        const diff = getRelativeTimeDiff(date);
         setState({
           currentUnit: props.unit || bestFit(diff),
           relativeTime: calculateRelativeTime(

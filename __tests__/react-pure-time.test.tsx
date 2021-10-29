@@ -1,7 +1,42 @@
-/* global describe expect it */
-import React from "react";
-import Time from "../src/react-pure-time.tsx";
-import renderer from "react-test-renderer";
+/**
+ * @jest-environment jsdom
+ */
+
+import * as React from "react";
+import * as renderer from "react-test-renderer";
+import Time from "../src/react-pure-time";
+
+import {
+  mockedStringHour,
+  mockedStringMinutes,
+} from "./helpers/data-mocked.const";
+
+jest.setTimeout(100000);
+describe("test async behavior of the Time component", () => {
+  it("Render Time component with relative time", (done) => {
+    const TimeComponent = renderer.create(
+      <Time value={mockedStringMinutes} relativeTime />
+    );
+    renderer.act(() => {
+      setTimeout(() => {
+        expect(TimeComponent.toJSON()).toMatchSnapshot();
+        done();
+      }, 1000);
+    });
+  });
+
+  it("1 minute change to hour", (done) => {
+    const TimeComponent = renderer.create(
+      <Time value={mockedStringHour} relativeTime />
+    );
+    renderer.act(() => {
+      setTimeout(() => {
+        expect(TimeComponent.toJSON()).toMatchSnapshot();
+        done();
+      }, 61000);
+    });
+  });
+});
 
 describe("Time component behavior", () => {
   it("Renders default placeholder with empty props", () => {
