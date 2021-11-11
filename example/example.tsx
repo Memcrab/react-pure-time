@@ -1,6 +1,6 @@
-import * as React from "react";
-import { render } from "react-dom";
-import Time from "../src/react-pure-time";
+import * as React from 'react';
+import { render } from 'react-dom';
+import Time from '../src/react-pure-time';
 
 const ModalContainer = () => (
   <div>
@@ -97,17 +97,13 @@ const ModalContainer = () => (
           </td>
         </tr>
         <tr>
-          <td>September 2, 2003, 2:26 am</td>
+          <td>November 11, 2021, 13:00</td>
           <td>relativeTime</td>
           <td>
-            <Time value="September 2, 2003, 2:26 am" relativeTime />
+            <Time value="November 11, 2021, 12:02" relativeTime />
           </td>
           <td>
-            <Time
-              value="Wed Nov 01 2017 17:29:03 GMT+0200 (EET)"
-              relativeTime
-              utc
-            />
+            <Time value="Wed Nov 01 2017 17:29:03 GMT+0200 (EET)" relativeTime utc />
           </td>
         </tr>
       </tbody>
@@ -115,4 +111,4 @@ const ModalContainer = () => (
   </div>
 );
 
-render(<ModalContainer />, document.getElementById("js--time"));
+render(<ModalContainer />, document.getElementById('js--time'));
