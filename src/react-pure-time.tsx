@@ -1,6 +1,6 @@
-import * as React from "react";
-import dateformat from "./format";
-import type { Props, State, Diff } from "./types";
+import * as React from 'react';
+import dateformat from './format';
+import type { Props, State, Diff } from './types';
 
 const msAmountIn: Record<string, number> = {
   second: 1000,
@@ -14,30 +14,24 @@ const getRelativeTimeString = (
   time: number,
   absTime: number,
   unit: string,
-  isFuture: boolean
+  isFuture: boolean,
 ): string => {
-  const unitDecl =
-    absTime % 100 === 1 || absTime % 10 === 1 ? unit : `${unit}s`;
+  const unitDecl = absTime % 100 === 1 || absTime % 10 === 1 ? unit : `${unit}s`;
 
-  if (unit === "second" && time === 0) return "just now";
-  if (unit === "year" && time === 0) return "this year";
-  if (unit === "year" && time === 1) return "last year";
+  if (unit === 'second' && time === 0) return 'just now';
+  if (unit === 'year' && time === 0) return 'this year';
+  if (unit === 'year' && time === 1) return 'last year';
 
-  return `${isFuture ? "will come in" : ""} ${absTime} ${unitDecl} ${
-    isFuture ? "" : "ago"
-  }`;
+  return `${isFuture ? 'will come in' : ''} ${absTime} ${unitDecl} ${isFuture ? '' : 'ago'}`;
 };
 
 const isDate = (value: string | number | Date): boolean => {
   const testDate = new Date(value);
-  if (Object.prototype.toString.call(testDate) !== "[object Date]")
-    return false;
+  if (Object.prototype.toString.call(testDate) !== '[object Date]') return false;
   return !isNaN(testDate.getTime());
 };
 
-const bestFit = (
-  diff: Diff
-): "year" | "month" | "week" | "day" | "hour" | "minute" | "second" => {
+const bestFit = (diff: Diff): 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' => {
   const seconds = Math.abs(diff.seconds);
   const minutes = Math.abs(diff.minutes);
   const hours = Math.abs(diff.hours);
@@ -48,19 +42,19 @@ const bestFit = (
 
   switch (true) {
     case years > 0 && months > 11:
-      return "year";
+      return 'year';
     case months > 0 && days > 27:
-      return "month";
+      return 'month';
     case weeks > 0 && days > 6:
-      return "week";
+      return 'week';
     case days > 0 && hours > 23:
-      return "day";
+      return 'day';
     case hours > 0 && minutes > 59:
-      return "hour";
+      return 'hour';
     case minutes > 0 && seconds > 59:
-      return "minute";
+      return 'minute';
     default:
-      return "second";
+      return 'second';
   }
 };
 
@@ -80,7 +74,7 @@ const getRelativeTimeDiff = (value: Date): Diff => {
   const ms = nowMs - dateMs;
 
   const years = now.getFullYear() - date.getFullYear();
-  const round = Math[ms > 0 ? "floor" : "ceil"];
+  const round = Math[ms > 0 ? 'floor' : 'ceil'];
 
   return {
     ms,
@@ -97,19 +91,19 @@ const getRelativeTimeDiff = (value: Date): Diff => {
 const calculateRelativeTime = (date: Date, currentUnit: string): string => {
   const diff = getRelativeTimeDiff(date);
   const diffkey = `${currentUnit}s` as
-    | "ms"
-    | "seconds"
-    | "minutes"
-    | "hours"
-    | "days"
-    | "weeks"
-    | "months"
-    | "years";
+    | 'ms'
+    | 'seconds'
+    | 'minutes'
+    | 'hours'
+    | 'days'
+    | 'weeks'
+    | 'months'
+    | 'years';
   let time = diff[diffkey];
   let absTime = Math.abs(time);
   const isFuture = time < 0;
 
-  if (currentUnit === "second") {
+  if (currentUnit === 'second') {
     let normTime = 45;
     if (absTime < 45) normTime = 20;
     if (absTime < 20) normTime = 5;
@@ -124,17 +118,17 @@ const calculateRelativeTime = (date: Date, currentUnit: string): string => {
 
 const Time = (props: Props) => {
   const {
-    value = "",
-    format = "d.m.Y H:i",
-    placeholder = "—",
-    className = "",
+    value = '',
+    format = 'd.m.Y H:i',
+    placeholder = '—',
+    className = '',
     utc = false,
     relativeTime,
   } = props;
 
   const [state, setState] = React.useState<State>({
-    relativeTime: "",
-    currentUnit: "",
+    relativeTime: '',
+    currentUnit: '',
   });
 
   React.useEffect(() => {
@@ -142,24 +136,20 @@ const Time = (props: Props) => {
     if (props.relativeTime && isDate(props.value)) {
       const date = new Date(props.value);
       const diff = getRelativeTimeDiff(date);
-      setState({
-        ...state,
-        currentUnit: props.unit || bestFit(diff),
-      });
+      const newCurrentUnit = props.unit || bestFit(diff);
 
       setState({
-        ...state,
-        relativeTime: calculateRelativeTime(date, state.currentUnit),
+        currentUnit: newCurrentUnit,
+        relativeTime: calculateRelativeTime(date, newCurrentUnit),
       });
+
       interval = window.setInterval(() => {
         const date = new Date(props.value);
         const diff = getRelativeTimeDiff(date);
+        const newCurrentUnit = props.unit || bestFit(diff);
         setState({
-          currentUnit: props.unit || bestFit(diff),
-          relativeTime: calculateRelativeTime(
-            date,
-            props.unit || bestFit(diff)
-          ),
+          currentUnit: newCurrentUnit,
+          relativeTime: calculateRelativeTime(date, newCurrentUnit),
         });
       }, getInterval(state.currentUnit));
     }
