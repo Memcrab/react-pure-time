@@ -1,6 +1,6 @@
 {
   "name": "react-pure-time",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "React pure time component which format date and time",
   "main": "dist/react-pure-time.min.js",
   "jnext:main": "dist/react-pure-time.min.js",
